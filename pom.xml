@@ -53,6 +53,14 @@
         </dependency>
     </dependencies>
 
+         <!-- Added OpenCSV dependency for CSV parsing -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
+        </dependency>
+    </dependencies>
+         
     <build>
         <plugins>
             <plugin>
