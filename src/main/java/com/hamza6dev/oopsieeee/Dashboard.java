@@ -1,4 +1,9 @@
 package com.hamza6dev.oopsieeee;
+import HealthData.VitalCsvImporter;
+import com.opencsv.exceptions.CsvValidationException;
+import javafx.stage.FileChooser;
+import User.Patient;
+
 import Appointment.Appointment;
 
 import javafx.application.Application;
@@ -13,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import User.*;
+
 
 
 public class Dashboard extends Application {
@@ -81,6 +87,41 @@ public class Dashboard extends Application {
         Button messagesBtn = createSidebarButton("Messages");
 
         sidebar.getChildren().addAll(dashboardBtn, patientsBtn, appointmentsBtn, messagesBtn);
+	    
+	    Button importVitalsBtn = createSidebarButton("Import Vitals CSV");
+sidebar.getChildren().add(importVitalsBtn);
+importVitalsBtn.setOnAction(e -> {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle("Select Vitals CSV File");
+    chooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+    File file = chooser.showOpenDialog(primaryStage);
+    if (file != null) {
+        try {
+            Patient currentPatient = (Patient) this.user;
+            VitalCsvImporter.importForPatient(file, currentPatient);
+            new Alert(Alert.AlertType.INFORMATION,
+                      "Vitals imported successfully!", ButtonType.OK)
+                .showAndWait();
+        } catch (IOException | CsvValidationException ex) {
+            ex.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                      "Import failed:\n" + ex.getMessage(), ButtonType.OK)
+                .showAndWait();
+        }
+    }
+});
+
+       
+	// create and add an “Enter Vitals” button
+        Button enterVitalsBtn = createSidebarButton("Enter Vitals");
+        sidebar.getChildren().add(enterVitalsBtn);
+
+        // when clicked, show the vitals‑entry form in the content area
+        enterVitalsBtn.setOnAction(e -> {
+        content.getChildren().clear();
+        content.getChildren().add(renderVitalsForm());
+        });
 
         // === Content Area (Right) ===
         VBox content = new VBox(30);
@@ -389,7 +430,7 @@ public class Dashboard extends Application {
 
         return patientInfo;
     }
-
+	
     private void initializeUser() {
         try {
             if(accountType.equals("doctor"))
